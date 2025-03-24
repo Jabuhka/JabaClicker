@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Жабий кликер</title>
+  <link rel="stylesheet" href="style.css"> <!-- Подключаем внешний CSS файл -->
+
+  <!-- Подключение Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Жабий кликер</h1>
+    <p>Нажмите на жабу, чтобы заработать жаб!</p>
+
+    <!-- Кнопка-картинка "Кликать" -->
+    <img id="clickButton" class="btn" src="JabaButton.png" alt="Кликать" />
+
+    <!-- Счет -->
+    <h3 id="scoreDisplay">Ваши жабы: 0</h3>
+
+    <!-- Выбор скина -->
+    <h3>Выберите скин:</h3>
+    <div id="skins" class="skin-container">
+      <img src="JabaButton.png" class="skin" id="skin1" alt="Скин 1" />
+      <img src="CherepButton.png" class="skin" id="skin2" alt="Скин 2" />
+      <img src="ValeraTwo.png" class="skin" id="skin3" alt="Скин 3" />
+    </div>
+
+    <!-- Кнопки управления -->
+    <div>
+      <button id="resetButton" class="btn">Сбросить игру</button>
+      <button id="logoutButton" class="btn">Выйти</button>
+    </div>
+  </div>
+
+  <script>
+    // Инициализация Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOmEBFGgtYEreB4MZpih7VEsVyw7fOE8o",
+      authDomain: "clickerjaba.firebaseapp.com",
+      projectId: "clickerjaba",
+      storageBucket: "clickerjaba.firebasestorage.app",
+      messagingSenderId: "1002545665073",
+      appId: "1:1002545665073:web:2a2880d3b07c8145e1b110",
+      measurementId: "G-EJD2EKHR58"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let points = 0;
+
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const clickButton = document.getElementById('clickButton');
+    const resetButton = document.getElementById('resetButton');
+    const logoutButton = document.getElementById('logoutButton');
+
+    // Проверка на авторизованного пользователя
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log('Пользователь авторизован:', user.email);
+        loadScore(user.uid); // Загружаем счет при успешном входе
+        loadSkin(user.uid); // Загружаем скин
+        checkForGift(user.uid); // Проверяем, есть ли подарок
+      } else {
+        console.log('Пользователь не авторизован');
+        window.location.href = "index.html"; // Перенаправление на страницу входа
+      }
+    });
+
+    // Загружаем баланс из базы данных
+    function loadScore(userId) {
+      const userScoreRef = db.ref('users/' + userId + '/score');
+      userScoreRef.once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          points = snapshot.val();
+          scoreDisplay.textContent = 'Ваши жабы: ' + points;
+        } else {
+          points = 1;  // При регистрации даем 1 монету
+          db.ref('users/' + userId).set({
+            score: points,
+            gift: 0,  // gift = 0, чтобы его можно было изменять только администратору
+            skin: "JabaButton.png" // Скин по умолчанию
+          });
+          scoreDisplay.textContent = 'Ваши жабы: ' + points;
+        }
+
+        // Включаем кнопку для клика после загрузки счета
+        clickButton.style.cursor = 'pointer';
+        clickButton.onclick = function () {
+          points++;
+          scoreDisplay.textContent = 'Ваши жабы: ' + points;
+          db.ref('users/' + userId).update({
+            score: points
+          });
+        };
+      });
+    }
+
+    // Проверяем, есть ли подарок для пользователя
+    function checkForGift(userId) {
+      const giftRef = db.ref('users/' + userId + '/gift');
+      giftRef.once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          const giftAmount = snapshot.val();
+          if (giftAmount > 0) {
+            alert('Подарок в размере ' + giftAmount + ' монет');
+            points += giftAmount;
+            scoreDisplay.textContent = 'Ваши жабы: ' + points;
+            db.ref('users/' + userId).update({
+              score: points,
+              gift: 0  // После получения подарка gift сбрасывается
+            });
+          }
+        }
+      });
+    }
+
+    // Обработчик кнопки "Сбросить игру"
+    resetButton.onclick = function () {
+      if (confirm("Вы уверены, что хотите сбросить игру?")) {
+        points = 0;
+        scoreDisplay.textContent = 'Ваши жабы: ' + points;
+        const userId = auth.currentUser.uid;
+        db.ref('users/' + userId).update({
+          score: points
+        });
+      }
+    };
+
+    // Обработчик выхода из аккаунта
+    logoutButton.onclick = function () {
+      auth.signOut().then(() => {
+        console.log('Выход успешен');
+        window.location.href = "index.html"; // Перенаправление на страницу входа
+      }).catch((error) => {
+        console.error('Ошибка при выходе:', error);
+      });
+    };
+
+    // Сохранение выбранного скина
+    function saveSkin(userId, skin) {
+      db.ref('users/' + userId).update({
+        skin: skin // Сохраняем выбранный скин
+      });
+    }
+
+    // При изменении скина
+    document.getElementById('skin1').onclick = function () {
+      const userId = auth.currentUser.uid;
+      clickButton.src = "JabaButton.png"; // Меняем картинку кнопки на новый скин
+      saveSkin(userId, 'JabaButton.png'); // Сохраняем скин в базе данных
+    };
+
+    document.getElementById('skin2').onclick = function () {
+      const userId = auth.currentUser.uid;
+      clickButton.src = "CherepButton.png"; // Меняем картинку кнопки на новый скин
+      saveSkin(userId, 'CherepButton.png'); // Сохраняем скин в базе данных
+    };
+
+    document.getElementById('skin3').onclick = function () {
+      const userId = auth.currentUser.uid;
+      clickButton.src = "ValeraTwo.png"; // Меняем картинку кнопки на новый скин
+      saveSkin(userId, 'ValeraTwo.png'); // Сохраняем скин в базе данных
+    };
+
+    // Загрузка скина при входе
+    function loadSkin(userId) {
+      const userSkinRef = db.ref('users/' + userId + '/skin');
+      userSkinRef.once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          const savedSkin = snapshot.val();
+          clickButton.src = savedSkin; // Загружаем сохраненный скин
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

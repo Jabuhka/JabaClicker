@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jaba Clicker - Login</title>
+  <!-- Стили CSS -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+    form {
+      margin: 20px auto;
+      max-width: 400px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    form input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    form button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    form button:hover {
+      background-color: #45a049;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #4CAF50;
+    }
+    .error {
+      color: #ff4d4d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Добро пожаловать в Jaba Clicker!</h1>
+  <!-- Форма регистрации -->
+  <form id="register-form">
+    <h3>Регистрация</h3>
+    <input type="email" id="register-email" placeholder="Введите email" required>
+    <input type="password" id="register-password" placeholder="Введите пароль" required>
+    <button type="button" onclick="registerUser()">Зарегистрироваться</button>
+  </form>
+  <!-- Форма входа -->
+  <form id="login-form">
+    <h3>Вход</h3>
+    <input type="email" id="login-email" placeholder="Введите email" required>
+    <input type="password" id="login-password" placeholder="Введите пароль" required>
+    <button type="button" onclick="loginUser()">Войти</button>
+  </form>
+  <!-- Сообщения -->
+  <div class="message" id="message"></div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+  <!-- Firebase инициализация -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOmEBFGgtYEreB4MZpih7VEsVyw7fOE8o",
+      authDomain: "clickerjaba.firebaseapp.com",
+      projectId: "clickerjaba",
+      storageBucket: "clickerjaba.firebasestorage.app",
+      messagingSenderId: "1002545665073",
+      appId: "1:1002545665073:web:2a2880d3b07c8145e1b110",
+      measurementId: "G-EJD2EKHR58"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function registerUser() {
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          showMessage("Регистрация прошла успешно! Теперь войдите.", "success");
+        })
+        .catch((error) => {
+          showMessage(`Ошибка: ${error.message}`, "error");
+        });
+    }
+
+    function loginUser() {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          window.location.href = "clicker.html"; // Перенаправление на игру
+        })
+        .catch((error) => {
+          showMessage(`Ошибка: ${error.message}`, "error");
+        });
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.getElementById("message");
+      messageDiv.textContent = message;
+      messageDiv.className = type === "success" ? "message" : "message error";
+    }
+  </script>
+</body>
+</html>
