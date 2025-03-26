@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Свяжитесь с поддержкой</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: #007BFF;
+        }
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Свяжитесь с поддержкой</h2>
+        <form id="support-form">
+            <input id="email" placeholder="Ваш никнейм" required>
+            <textarea id="message" placeholder="Опишите вашу проблему" rows="5" required></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+        <button onclick="Voz()">Вернуться в игру</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        emailjs.init("Jg--bvHEFT2eCTrmm");
+
+        document.getElementById("support-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            emailjs.send("service_k0159s4", "template_hmklyy9", {
+                user_email: document.getElementById("email").value,
+                message: document.getElementById("message").value
+            }).then(function(response) {
+                document.getElementById("status").innerText = "Сообщение успешно отправлено!";
+                document.getElementById("status").style.color = "green";
+            }, function(error) {
+                document.getElementById("status").innerText = "Ошибка отправки: " + error.text;
+                document.getElementById("status").style.color = "red";
+            });
+        });
+
+        function Voz()
+        {
+            var isAdmin = confirm("Перейти в игру?");
+            //alert(isAdmin)
+            if (isAdmin == true)
+            {
+                window.location.href = "clicker.html";
+            }
+            else {
+                alert("Отменено")
+            }
+        }
+    </script>
+</body>
+</html>
