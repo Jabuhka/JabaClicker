@@ -21,7 +21,7 @@
     <img id="clickButton" class="btn" src="JabaButton.png" alt="Кликать" />
 
     <!-- Счет -->
-    <h3 id="scoreDisplay">Ваши жабы: 0</h3>
+    <h3 id="scoreDisplay">Загрузка жаб...</h3>
 
     <!-- Выбор скина -->
     <h3>Выберите скин:</h3>
@@ -29,26 +29,36 @@
       <img src="JabaButton.png" class="skin" id="skin1" alt="Скин 1" />
       <img src="CherepButton.png" class="skin" id="skin2" alt="Скин 2" />
       <img src="ValeraTwo.png" class="skin" id="skin3" alt="Скин 3" />
+      <img src="VolkusButton.png" class="skin" id="skin4" alt="Скин 4" />
     </div>
 
+    <h2 id="nick">Загрузка...</h2>
     <!-- Кнопки управления -->
     <div>
       <button id="resetButton" class="btn">Сбросить игру</button>
       <button id="logoutButton" class="btn">Выйти</button>
     </div>
+    <div>
+      <button id="Github" class="git">Github</button>
+      <button id="Support" class="sup">Поддержка</button>
+    </div>
   </div>
 
   <script>
-    // Инициализация Firebase
+
     const firebaseConfig = {
       apiKey: "AIzaSyAOmEBFGgtYEreB4MZpih7VEsVyw7fOE8o",
       authDomain: "clickerjaba.firebaseapp.com",
+      databaseURL: "https://clickerjaba-default-rtdb.firebaseio.com/",
       projectId: "clickerjaba",
-      storageBucket: "clickerjaba.firebasestorage.app",
+      storageBucket: "clickerjaba.appspot.com",
       messagingSenderId: "1002545665073",
-      appId: "1:1002545665073:web:2a2880d3b07c8145e1b110",
-      measurementId: "G-EJD2EKHR58"
+      appId: "1:1002545665073:web:2a2880d3b07c8145e1b110"
     };
+
+
+console.log("Firebase подключён!"); // Проверка
+
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -59,12 +69,26 @@
     const scoreDisplay = document.getElementById('scoreDisplay');
     const clickButton = document.getElementById('clickButton');
     const resetButton = document.getElementById('resetButton');
+    const GitButton = document.getElementById('Github');
+    const SupButton = document.getElementById('Support');
     const logoutButton = document.getElementById('logoutButton');
+
+    function loadNickname(userId) {
+    const userNickRef = db.ref('users/' + userId + '/nickname');
+    userNickRef.once('value', (snapshot) => {
+      if (snapshot.exists()) {
+        document.getElementById('nick').textContent = snapshot.val();
+      } else {
+        document.getElementById('nick').textContent = "Неизвестный игрок";
+      }
+    });
+  }
 
     // Проверка на авторизованного пользователя
     auth.onAuthStateChanged((user) => {
       if (user) {
         console.log('Пользователь авторизован:', user.email);
+        loadNickname(user.uid);
         loadScore(user.uid); // Загружаем счет при успешном входе
         loadSkin(user.uid); // Загружаем скин
         checkForGift(user.uid); // Проверяем, есть ли подарок
@@ -89,6 +113,17 @@
             skin: "JabaButton.png" // Скин по умолчанию
           });
           scoreDisplay.textContent = 'Ваши жабы: ' + points;
+        }
+
+        function loadNickname(userId) {
+          const userNickRef = db.ref('users/' + userId + '/nickname');
+          userNickRef.once('value', (snapshot) => {
+          if (snapshot.exists()) {
+            document.getElementById('nick').textContent = snapshot.val();
+          } else {
+            document.getElementById('nick').textContent = "Неизвестный игрок";
+          }
+          });
         }
 
         // Включаем кнопку для клика после загрузки счета
@@ -124,14 +159,34 @@
 
     // Обработчик кнопки "Сбросить игру"
     resetButton.onclick = function () {
-      if (confirm("Вы уверены, что хотите сбросить игру?")) {
-        points = 0;
-        scoreDisplay.textContent = 'Ваши жабы: ' + points;
+  if (confirm("Вы уверены, что хотите сбросить игру?")) {
+    if (confirm("Вы уверены? ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!")) {
+      points = 0;
+      scoreDisplay.textContent = 'Ваши жабы: ' + points;
+      
+      if (auth.currentUser) {
         const userId = auth.currentUser.uid;
         db.ref('users/' + userId).update({
           score: points
+        }).then(() => {
+          alert("Игра успешно сброшена!");
+        }).catch((error) => {
+          console.error("Ошибка при сбросе данных:", error);
         });
+      } else {
+        alert("Ошибка: пользователь не авторизован.");
       }
+    }
+  }
+};
+
+
+    GitButton.onclick = function () {
+      window.open("https://github.com/Jabuhka/JabaClicker", "Github Window", "popup");
+    };
+
+    SupButton.onclick = function () {
+      window.location.href = "support.html";
     };
 
     // Обработчик выхода из аккаунта
@@ -168,6 +223,12 @@
       const userId = auth.currentUser.uid;
       clickButton.src = "ValeraTwo.png"; // Меняем картинку кнопки на новый скин
       saveSkin(userId, 'ValeraTwo.png'); // Сохраняем скин в базе данных
+    };
+
+    document.getElementById('skin4').onclick = function () {
+      const userId = auth.currentUser.uid;
+      clickButton.src = "VolkusButton.png"; // Меняем картинку кнопки на новый скин
+      saveSkin(userId, 'VolkusButton.png'); // Сохраняем скин в базе данных
     };
 
     // Загрузка скина при входе
