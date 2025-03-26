@@ -1,77 +1,134 @@
-        body {
-            font-family: 'Comic Sans MS', sans-serif;
-            text-align: center;
-            background: linear-gradient(to bottom, #98fb98, #2e8b57);
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
-        #clicker {
-            margin: 20px auto;
-            width: 150px;
-            height: 150px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-        }
-        #clicker:active {
-            transform: scale(0.9);
-        }
-        #store, #skins {
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        #store h2, #skins h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        button {
-            background: #32cd32;
-            color: white;
-            font-size: 1.2em;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        button:hover {
-            background: #228b22;
-        }
-        button:active {
-            background: #006400;
-        }
-        .skin {
-            margin: 10px;
-            width: 60px;
-            height: 60px;
-            background-size: cover;
-            background-position: center;
-            display: inline-block;
-            border: 2px solid transparent;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: border 0.3s ease, transform 0.2s ease-in-out;
-        }
-        .skin:hover {
-            transform: scale(1.1);
-        }
-        .selected {
-            border: 3px solid #ffd700;
-        }
+/* Общие стили */
+body {
+    font-family: 'Comic Sans MS', sans-serif;
+    text-align: center;
+    background: linear-gradient(to bottom, #0d1b2a, #1b263b, #415a77);
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Заголовок */
+h1 {
+    font-size: 3.5em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #ffd700, 0 0 20px #ff6600;
+}
+
+/* Текст */
+p {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+/* Кнопка-кликер */
+#clicker {
+    margin: 20px auto;
+    width: 160px;
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid #ffd700;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#clicker:hover {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+}
+
+#clicker:active {
+    transform: scale(0.85);
+    animation: clickEffect 0.2s ease-in-out;
+}
+
+/* Анимация эффекта нажатия */
+@keyframes clickEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.85); box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
+    100% { transform: scale(1); }
+}
+
+/* Контейнеры магазина и скинов */
+#store, #skins {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+#store h2, #skins h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Кнопки */
+button {
+    background: linear-gradient(45deg, #00ff40, #008000);
+    color: white;
+    font-size: 1.3em;
+    padding: 12px 25px;
+    margin: 10px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 255, 64, 0.7);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #00e639, #006d00);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.9);
+    animation: clickEffect 0.2s ease-in-out;
+}
+
+/* Гит-кнопка */
+.git {
+    background: #0d1117;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.git:hover {
+    background: #000000;
+}
+
+/* Кнопка поддержки */
+.sup {
+    background: linear-gradient(45deg, #00ff40, #00aa00);
+    box-shadow: 0 0 15px rgba(0, 255, 64, 0.8);
+}
+
+.sup:hover {
+    background: linear-gradient(45deg, #00e639, #009900);
+}
+
+/* Скины */
+.skin {
+    margin: 10px;
+    width: 70px;
+    height: 70px;
+    background-size: cover;
+    background-position: center;
+    display: inline-block;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border 0.3s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
+}
+
+.skin:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.selected {
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 1);
+}
